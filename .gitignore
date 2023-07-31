@@ -1,6 +1,5 @@
 environment.yml
 experiment.py
-streamlit_Tensorflow.yml
 unet_carpets_weights_GS4C.h5
 unet_carpets_weights_Left_19_40_13-05
 unet_carpets_weights_Left_19_40_13-05.h5
@@ -22,3 +21,4 @@ output/TUD-Stadtmitte.txt
 output/Venice-2.txt
 tmp/extracted/Batch_CP_16-10.mp4
 =0.0.1
+flying-carpets.code-workspace

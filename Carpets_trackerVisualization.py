@@ -359,7 +359,7 @@ def draw_colored_coords(image, coords, color, img_w, img_h, thickness=1):
 
 # Детектор для видео
 def detect_carpets(frame):
-    min_area = 1000
+    min_area = 500
     bbox = []
     if st.session_state.prev_frame != None:
         diff = cv2.absdiff(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY),cv2.cvtColor(prevframe, cv2.COLOR_BGR2GRAY),)
@@ -371,9 +371,10 @@ def detect_carpets(frame):
         for cnt in contours:
             x,y,w,h = cv2.boundingRect(cnt)
             if w*h > min_area:
-                bbox.append([x, y, w, h])
+                bbox.append([x, y, x+w, y+h])        #Координаты и предсказания для трекера
+        cls ,count = np.unique(predict, return_counts=True)
     st.session_state.prev_frame = frame
-    return bbox
+    return cls,counts,bbox
 
 def track_carpets(bbox):
     if not st.session_state.mot_tracker:
@@ -384,7 +385,7 @@ def track_carpets(bbox):
         y1 = box[1]-box[3]/2
         y2 = box[1]+box[3]/2
         st.session_state.track = mot_tracker.update(np.array([x1, y1, x2, y2,-1]))
-        return track           #return the ID of the tracked object
+        return st.session_state.track[-1][0]           #return the ID of the tracked object
 @st.cache_resource
 def load_model():
     # Создание модели и вывод сводки по архитектуре
@@ -451,6 +452,9 @@ def load_video():
             text=f"Video processing{frame_count}/{Frames_Limit}",
         )
         if ret:
+            cls,cnt,bbox = detect_carpets(frame)
+        if False: '''
+        if ret:
             t_0 = time()
             diff = cv2.absdiff(
                 cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY),
@@ -464,7 +468,9 @@ def load_video():
             predict = np.argmax(
                 model.predict(np.array([img_for_predict]), verbose=0), axis=-1
             )
-            if False: '''
+            cls ,count = np.unique(predict, return_counts=True)
+            stext60x90.write(f'Class:{cls} Count:{count}')
+            
             # stext.write(predict)
             colored_predict = labels_to_rgb(predict[..., None])[0]
 
@@ -537,6 +543,7 @@ def load_video():
             else:
                 print("Ковер не обнаружен.\n")
             '''
+            result = frame
             image.image(result)
 
             prevframe = frame
