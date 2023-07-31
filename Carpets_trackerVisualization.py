@@ -376,7 +376,6 @@ def detect_carpets(frame):
     return bbox
 
 def track_carpets(bbox):
-
     if not st.session_state.mot_tracker:
         st.session_state.mot_tracker = Sort() #create instance of the SORT tracker
     for box in bbox:
@@ -385,7 +384,7 @@ def track_carpets(bbox):
         y1 = box[1]-box[3]/2
         y2 = box[1]+box[3]/2
         st.session_state.track = mot_tracker.update(np.array([x1, y1, x2, y2,-1]))
-        return track[-1]            #return the ID of the tracked object
+        return track           #return the ID of the tracked object
 @st.cache_resource
 def load_model():
     # Создание модели и вывод сводки по архитектуре
@@ -420,7 +419,7 @@ def set_video_range(filename):
 
 def load_video():
     cap.set(cv2.CAP_PROP_POS_FRAMES, st.session_state.slider_side[0])
-    frame_limit = st.session_state.slider_side[1]- st.session_state.slider_side[0]
+    Frame_limit = st.session_state.slider_side[1]- st.session_state.slider_side[0]
     st.session_state.proggressbar = "visible"
     pb.progress(0, text="Video processing")
     # Вычисление переменных для масштабирования видео
@@ -465,6 +464,7 @@ def load_video():
             predict = np.argmax(
                 model.predict(np.array([img_for_predict]), verbose=0), axis=-1
             )
+            if False: '''
             # stext.write(predict)
             colored_predict = labels_to_rgb(predict[..., None])[0]
 
@@ -527,6 +527,7 @@ def load_video():
 
             # clear_output(wait=True)
             print("Кадр", Started_Frame + frame_count, "обработан за", time_text)
+            
             if DetectedClass != 0:
                 print(
                     "Относительные координаты ковра:",
@@ -535,6 +536,7 @@ def load_video():
                 print("Класс:", DetectedClass)
             else:
                 print("Ковер не обнаружен.\n")
+            '''
             image.image(result)
 
             prevframe = frame
